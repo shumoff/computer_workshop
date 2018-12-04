@@ -74,23 +74,23 @@ def n_polynomial(x_, y_, n, coefficients):
 def plotting(a, n, func):
     coefficients = [0]*n
     x_new = np.linspace(-a, a, 1000)
+    y_f = [func(i, a) for i in x_new]
     x = np.linspace(-a, a, n)
+    y = [func(i, a) for i in x]
     x_ch = [chebyshev(i, a, n) for i in range(n)]
     y_ch = [func(i, a) for i in x_ch]
-    y = [func(i, a) for i in x]
-    y_f = [func(i, a) for i in x_new]
     y_l = [lagrange(x, y, point, n) for point in x_new]
     y_n = [newton(x, y, point, n, coefficients) for point in x_new]
     y_ch_l = [lagrange(x_ch, y_ch, point, n) for point in x_new]
     y_ch_n = [newton(x_ch, y_ch, point, n, coefficients) for point in x_new]
     c = [abs(y_f[i] - y_l[i]) for i in range(n)]
     print(max(c))
-    plt.plot(x_new, y_f, x_new, y_l, x_new, y_ch_l)
+    plt.plot(x_new, y_f, 'b', x_new, y_l, 'g', x_new, y_ch_l, 'r')
     print(sp.simplify(l_polynomial(x, y, n)))
-    plt.plot(x_new, y_f, x_new, y_n, x_new, y_ch_n)
-    print(sp.simplify(n_polynomial(x, y, n, coefficients)))
+    # plt.plot(x_new, y_f, 'b', x_new, y_n, 'g', x_new, y_ch_n, 'r')
+    # print(sp.simplify(n_polynomial(x, y, n, coefficients)))
     plt.grid(True)
     plt.show()
 
 
-plotting(7, 10, f_module)
+plotting(7, 6, f)
