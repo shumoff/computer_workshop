@@ -39,38 +39,40 @@ def l_polynomial(x_, y_, n):
     return sym_polynomial
 
 
-def coefficient(x_, y_, k):
+def coefficient(x_, y_, k, coefficients):
     c = 0
     differences = 1
     for i in range(k):
         differences *= (x_[k] - x_[k-i-1])
-        c -= (coefficient(x_, y_, k-i-1) / differences)
+        c -= coefficients[k-i-1] / differences
     c += y_[k]/differences
+    coefficients[k] = c
     return c
 
 
-def newton(x_, y_, point, n):
+def newton(x_, y_, point, n, coefficients):
     polynomial = 0
     for j in range(n):
         differences = 1
         for i in range(j):
             differences *= (point - x_[i])
-        polynomial += coefficient(x_, y_, j) * differences
+        polynomial += coefficient(x_, y_, j, coefficients) * differences
     return polynomial
 
 
-def n_polynomial(x_, y_, n):
+def n_polynomial(x_, y_, n, coefficients):
     sym_polynomial = 0
     w = sp.symbols('x')
     for j in range(n):
         difference = 1
         for i in range(j):
             difference *= (w - x_[j])
-        sym_polynomial += coefficient(x_, y_, j) * difference
+        sym_polynomial += coefficient(x_, y_, j, coefficients) * difference
     return sym_polynomial
 
 
 def plotting(a, n, func):
+    coefficients = [0]*n
     x_new = np.linspace(-a, a, 1000)
     x = np.linspace(-a, a, n)
     x_ch = [chebyshev(i, a, n) for i in range(n)]
@@ -78,17 +80,17 @@ def plotting(a, n, func):
     y = [func(i, a) for i in x]
     y_f = [func(i, a) for i in x_new]
     y_l = [lagrange(x, y, point, n) for point in x_new]
-    y_n = [newton(x, y, point, n) for point in x_new]
+    y_n = [newton(x, y, point, n, coefficients) for point in x_new]
     y_ch_l = [lagrange(x_ch, y_ch, point, n) for point in x_new]
-    y_ch_n = [newton(x_ch, y_ch, point, n) for point in x_new]
+    y_ch_n = [newton(x_ch, y_ch, point, n, coefficients) for point in x_new]
     c = [abs(y_f[i] - y_l[i]) for i in range(n)]
     print(max(c))
     plt.plot(x_new, y_f, x_new, y_l, x_new, y_ch_l)
     print(sp.simplify(l_polynomial(x, y, n)))
     plt.plot(x_new, y_f, x_new, y_n, x_new, y_ch_n)
-    print(sp.simplify(n_polynomial(x, y, n)))
+    print(sp.simplify(n_polynomial(x, y, n, coefficients)))
     plt.grid(True)
     plt.show()
 
 
-plotting(7, 10, f)
+plotting(7, 10, f_module)
