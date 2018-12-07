@@ -30,7 +30,7 @@ def canonical_coefficients(x_, y_, n):
     a_ = np.linalg.solve(w_matrix, y_vector)
     a_ = list(np.ravel(a_))
     a_.reverse()
-    print(a_)
+    return a_
 
 
 def lagrange(x_, y_, point, n):
@@ -107,10 +107,13 @@ def plotting(a, n, func):
     # c = [abs(y_f[i] - y_l[i]) for i in range(n)]
     # print(max(c))
     plt.plot(x_new, y_f, 'b', x_new, y_l, 'g', x_new, y_ch_l, 'r')
-    print(sp.simplify(l_polynomial(x, y, n)))
     plt.plot(x_new, y_f, 'b', x_new, y_n, 'g', x_new, y_ch_n, 'r')
-    print(sp.simplify(n_polynomial(x, y, n, coefficients)))
-    canonical_coefficients(x, y, n)
+    print('Lagrange polynomial: ', sp.simplify(l_polynomial(x, y, n)), '\n')
+    print('Lagrange polynomial (Chebyshev): ', sp.simplify(l_polynomial(x_ch, y_ch, n)), '\n')
+    print('Newton polynomial:', sp.simplify(n_polynomial(x, y, n, coefficients)), '\n')
+    print('Newton polynomial (Chebyshev):', sp.simplify(n_polynomial(x_ch, y_ch, n, coefficients)), '\n')
+    print('Canonical coefficients: ', canonical_coefficients(x, y, n))
+    print('Canonical coefficients (Chebyshev): ', canonical_coefficients(x_ch, y_ch, n))
     plt.grid(True)
     plt.show()
 
