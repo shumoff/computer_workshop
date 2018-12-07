@@ -5,8 +5,8 @@ import math as m
 
 
 def f(x_, a):
-    # return x_ * m.tan(x_ + a + 0.1)
-    return x_ * m.log(x_ + a + 0.1)
+    return x_ * m.tan(x_ + a + 0.1)
+    # return x_ * m.log(x_ + a + 0.1)
 
 
 def chebyshev(i, a, n):
