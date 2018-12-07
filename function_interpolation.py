@@ -13,7 +13,24 @@ def f_module(x_, a):
 
 
 def chebyshev(i, a, n):
-    return 0.5 * ((a + a) * m.cos(m.pi * (2 * i + 1) / (2 * (n + 1))))
+    return a * m.cos(m.pi * (2 * i + 1) / (2 * (n + 1)))
+
+
+def vandermonde(x_, n):
+    q_matrix = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            q_matrix[i][j] = x_[i]**j
+    return q_matrix
+
+
+def canonical_coefficients(x_, y_, n):
+    y_vector = np.matrix([y_[i] for i in range(n)]).transpose()
+    w_matrix = vandermonde(x_, n)
+    a_ = np.linalg.solve(w_matrix, y_vector)
+    a_ = list(np.ravel(a_))
+    a_.reverse()
+    print(a_)
 
 
 def lagrange(x_, y_, point, n):
@@ -60,14 +77,18 @@ def newton(x_, y_, point, n, coefficients):
     return polynomial
 
 
-def n_polynomial(x_, y_, n, coefficients):
+def n_polynomial(x_, y_, n, coefficients, sym=False):
     sym_polynomial = 0
     w = sp.symbols('x')
     for j in range(n):
         difference = 1
         for i in range(j):
-            difference *= (w - x_[j])
-        sym_polynomial += coefficient(x_, y_, j, coefficients) * difference
+            difference *= (w - x_[i])
+        if sym:
+            sym_c = sp.symbols('c{}'.format(j))
+            sym_polynomial += sym_c * difference
+        else:
+            sym_polynomial += coefficient(x_, y_, j, coefficients) * difference
     return sym_polynomial
 
 
@@ -83,14 +104,15 @@ def plotting(a, n, func):
     y_n = [newton(x, y, point, n, coefficients) for point in x_new]
     y_ch_l = [lagrange(x_ch, y_ch, point, n) for point in x_new]
     y_ch_n = [newton(x_ch, y_ch, point, n, coefficients) for point in x_new]
-    c = [abs(y_f[i] - y_l[i]) for i in range(n)]
-    print(max(c))
+    # c = [abs(y_f[i] - y_l[i]) for i in range(n)]
+    # print(max(c))
     plt.plot(x_new, y_f, 'b', x_new, y_l, 'g', x_new, y_ch_l, 'r')
     print(sp.simplify(l_polynomial(x, y, n)))
-    # plt.plot(x_new, y_f, 'b', x_new, y_n, 'g', x_new, y_ch_n, 'r')
-    # print(sp.simplify(n_polynomial(x, y, n, coefficients)))
+    plt.plot(x_new, y_f, 'b', x_new, y_n, 'g', x_new, y_ch_n, 'r')
+    print(sp.simplify(n_polynomial(x, y, n, coefficients)))
+    canonical_coefficients(x, y, n)
     plt.grid(True)
     plt.show()
 
 
-plotting(7, 6, f)
+plotting(5, 4, f)
