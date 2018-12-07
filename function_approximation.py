@@ -67,8 +67,8 @@ def plotting(a, n, func):
     p = [polynomial(point, a_, n) for point in x_new]
     p_ch = [polynomial(point, a_ch, n) for point in x_new]
     plt.plot(x_new, y_f, 'b', x_new, p, 'g', x_new, p_ch, 'r')
-    print('Approximation polynomial: ', sym_polynomial(a_, n), '\n')
-    print('Approximation polynomial (Chebyshev): ', sym_polynomial(a_ch, n), '\n')
+    print('Approximation polynomial: ', sym_polynomial(a_, n))
+    print('Approximation polynomial (Chebyshev): ', sym_polynomial(a_ch, n))
     print('Canonical coefficients: ', canonical_coefficients(x, y, n))
     print('Canonical coefficients (Chebyshev): ', canonical_coefficients(x_ch, y_ch, n))
     plt.grid(True)
