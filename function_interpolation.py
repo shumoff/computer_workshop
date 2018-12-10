@@ -12,6 +12,14 @@ def f_module(x_, a):
     return abs(x_) * x_ * m.log(x_ + a + 0.1)
 
 
+def plotting(x, y, y_new, x_knots, y_knots, format_1, format_2, format_3, title):
+    plt.plot(x, y, format_1, x, y_new, format_2)
+    plt.plot(x_knots, y_knots, format_3)
+    plt.title(title)
+    plt.grid(True)
+    plt.show()
+
+
 def chebyshev(i, a, n):
     return a * m.cos(m.pi * (2 * i + 1) / (2 * (n + 1)))
 
@@ -92,7 +100,7 @@ def n_polynomial(x_, y_, n, coefficients, sym=False):
     return sym_polynomial
 
 
-def plotting(a, n, func):
+def main(a, n, func):
     coefficients = [0]*n
     x_new = np.linspace(-a, a, 1000)
     y_f = [func(i, a) for i in x_new]
@@ -104,18 +112,16 @@ def plotting(a, n, func):
     y_n = [newton(x, y, point, n, coefficients) for point in x_new]
     y_ch_l = [lagrange(x_ch, y_ch, point, n) for point in x_new]
     y_ch_n = [newton(x_ch, y_ch, point, n, coefficients) for point in x_new]
-    # c = [abs(y_f[i] - y_l[i]) for i in range(n)]
-    # print(max(c))
-    plt.plot(x_new, y_f, 'b', x_new, y_l, 'g', x_new, y_ch_l, 'r')
-    plt.plot(x_new, y_f, 'b', x_new, y_n, 'g', x_new, y_ch_n, 'r')
+    plotting(x_new, y_f, y_l, x, y, 'b', 'g', 'co', 'Lagrange')
+    plotting(x_new, y_f, y_n, x, y, 'b', 'g', 'co', 'Newton')
+    plotting(x_new, y_f, y_ch_l, x, y, 'b', 'r', 'mo', 'Lagrange (Chebyshev)')
+    plotting(x_new, y_f, y_ch_n, x, y, 'b', 'r', 'mo', 'Newton (Chebyshev)')
     print('Lagrange polynomial: ', sp.simplify(l_polynomial(x, y, n)))
     print('Newton polynomial:', sp.simplify(n_polynomial(x, y, n, coefficients)))
     print('Canonical coefficients: ', canonical_coefficients(x, y, n))
     print('Lagrange polynomial (Chebyshev): ', sp.simplify(l_polynomial(x_ch, y_ch, n)))
     print('Newton polynomial (Chebyshev):', sp.simplify(n_polynomial(x_ch, y_ch, n, coefficients)))
     print('Canonical coefficients (Chebyshev): ', canonical_coefficients(x_ch, y_ch, n))
-    plt.grid(True)
-    plt.show()
 
 
-plotting(5, 4, f)
+main(5, 5, f)

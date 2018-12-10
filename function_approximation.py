@@ -9,6 +9,14 @@ def f(x_, a):
     # return x_ * m.log(x_ + a + 0.1)
 
 
+def plotting(x, y, y_new, x_knots, y_knots, format_1, format_2, format_3, title):
+    plt.plot(x, y, format_1, x, y_new, format_2)
+    plt.plot(x_knots, y_knots, format_3)
+    plt.title(title)
+    plt.grid(True)
+    plt.show()
+
+
 def chebyshev(i, a, n):
     return a * m.cos(m.pi * (2 * i + 1) / (2 * (n + 1)))
 
@@ -55,7 +63,7 @@ def sym_polynomial(a_, n):
     return p
 
 
-def plotting(a, n, func):
+def main(a, n, func):
     x_new = np.linspace(-a, a, 1000)
     y_f = [func(i, a) for i in x_new]
     x = np.linspace(-a, a, n)
@@ -66,13 +74,12 @@ def plotting(a, n, func):
     a_ch = solution(x_ch, y_ch, n)
     p = [polynomial(point, a_, n) for point in x_new]
     p_ch = [polynomial(point, a_ch, n) for point in x_new]
-    plt.plot(x_new, y_f, 'b', x_new, p, 'g', x_new, p_ch, 'r')
+    plotting(x_new, y_f, p, x, y, 'b', 'g', 'co', 'Least square method')
+    plotting(x_new, y_f, p_ch, x_ch, y_ch, 'b', 'r', 'mo', 'Least square method (Chebyshev)')
     print('Approximation polynomial: ', sym_polynomial(a_, n))
     print('Canonical coefficients: ', canonical_coefficients(x, y, n))
     print('Approximation polynomial (Chebyshev): ', sym_polynomial(a_ch, n))
     print('Canonical coefficients (Chebyshev): ', canonical_coefficients(x_ch, y_ch, n))
-    plt.grid(True)
-    plt.show()
 
 
-plotting(5, 4, f)
+main(0.7, 6, f)
