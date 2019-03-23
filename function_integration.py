@@ -12,14 +12,6 @@ alpha = 0
 beta = 4/7
 
 
-def integrity(a, b, func, n):
-    integral = 0
-    step = (b - a) / n
-    for i in range(n):
-        integral += func(a+(i+0.5)*step)
-    print("Tupoe resulting value: ", integral * step)
-
-
 def function(x, opt=False, diff=False):
     if opt:
         return -abs(4 * math.cos(2.5*x) * math.exp(4*x/7) + 2.5 * math.sin(5.5*x) * math.exp(-3*x/5) + 4.3 * x)
@@ -97,18 +89,39 @@ def interpolation_quadrature_rules(a, b, n, composite=False):
 
 
 def composite_quadrature_rule(a, b, n, epsilon=10**-6):
-    k = 5
+    sample_value = integrate.quad(wanted_function, a, b)[0]
+    s_h1 = 0
+    s_h2 = 0
+    k = 3
+    l_ = 2
+    m = 2
     h = (b - a) / k
-    numerical_value = 0
     for i in range(k):
-        numerical_value += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, composite=True)
-    print("\nComposite resulting value: ", numerical_value)
+        s_h1 += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, composite=True)
+    for i in range(l_*k):
+        s_h2 += interpolation_quadrature_rules(a + i * h/l_, a + (i + 1) * h/l_, n, composite=True)
+    h_opt = h * ((epsilon * (1 - l_**(-m)) / abs(s_h2 - s_h1))**(1/m))
+    k_opt = math.floor((b - a)/h_opt)
+    numerical_value = 0
+    print(k_opt)
+    for j in range(k_opt):
+        numerical_value += interpolation_quadrature_rules(a + j * h_opt, a + (j + 1) * h_opt, n, composite=True)
+    numerical_value += interpolation_quadrature_rules(a + k_opt * h_opt, b, n, composite=True)
+    # k = 0
+    # while abs(sample_value - numerical_value) > epsilon:
+    #     numerical_value = 0
+    #     k += 1
+    #     h = (b - a) / k
+    #     for i in range(k):
+    #         numerical_value += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, composite=True)
+    # print(k)
+    print("\nComposite resulting value: ", numerical_value, "Difference: ", abs(sample_value - numerical_value))
 
 
-def richardson(a, b, epsilon):
+def richardson(a, b, epsilon=10**-6):
     steps = 0
     m = 0
-    while True: # compare to epsilon
+    while True:  # compare to epsilon
         steps += 1
         h = (b - a) / steps
         r = steps - 1
@@ -122,17 +135,12 @@ def methodical_error_estimation(a, b, knots):
     x_ = sp.Symbol("x")
     f = -sp.Abs(sp.diff(function(0, diff=True), sp.Symbol("x"), len(knots)))
     f = sp.utilities.lambdify(x_, f)
-    # print(optimize.minimize_scalar(f, bounds=(a, b), method='Bounded'))
-    # print(optimize.minimize_scalar(function, bounds=(a, b), method='Bounded', args=(True,)))
-    # print((-optimize.minimize_scalar(function, bounds=(a, b), method='Bounded', args=(True,)).fun /
-    #       math.factorial(len(knots))) * integrate.quad(estimator_func, a, b, args=(knots,))[0])
     return (-optimize.minimize_scalar(f, bounds=(a, b), method='Bounded').fun / math.factorial(len(knots))) * \
         integrate.quad(estimator_func, a, b, args=(knots,))[0]
 
 
 def main(a, b, n):
     start = time.time()
-    integrity(a, b, function, 100_000_00)
     interpolation_quadrature_rules(a, b, n)
     composite_quadrature_rule(a, b, n)
     print("Elapsed time: ", time.time() - start)
