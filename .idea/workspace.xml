@@ -7,7 +7,6 @@
     <list default="true" id="f3e7ad49-4a03-4e3b-8949-c86ce6b1f67c" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/function_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/function_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/least_squares_method.py" beforeDir="false" afterPath="$PROJECT_DIR$/least_squares_method.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../bets_parser/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../via_aspera_ad_astra/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../via_aspera_ad_astra/.idea/workspace.xml" afterDir="false" />
     </list>
@@ -63,8 +62,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/least_squares_method.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="71" column="49" selection-start-line="71" selection-start-column="49" selection-end-line="71" selection-end-column="49" />
+            <state relative-caret-position="1139">
+              <caret line="70" column="46" selection-start-line="70" selection-start-column="46" selection-end-line="70" selection-end-column="46" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -75,8 +74,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/function_integration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="150" lean-forward="true" selection-start-line="150" selection-end-line="150" />
+            <state relative-caret-position="250">
+              <caret line="157" column="18" lean-forward="true" selection-start-line="157" selection-start-column="18" selection-end-line="157" selection-end-column="18" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -143,6 +142,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -154,7 +154,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -334,23 +333,25 @@
       <workItem from="1552411026074" duration="39000" />
       <workItem from="1553301487820" duration="1587000" />
       <workItem from="1553335931275" duration="6458000" />
-      <workItem from="1554024927862" duration="7469000" />
+      <workItem from="1554024927862" duration="7546000" />
+      <workItem from="1554066458680" duration="96000" />
+      <workItem from="1554066581810" duration="3221000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="108496000" />
+    <option name="totallyTimeSpent" value="111890000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.252349" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2590604" />
       <window_info id="Structure" order="1" weight="0.24966443" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3286119" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.33002833" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.33002833" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.38101983" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -484,8 +485,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/least_squares_method.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="71" column="49" selection-start-line="71" selection-start-column="49" selection-end-line="71" selection-end-column="49" />
+        <state relative-caret-position="1139">
+          <caret line="70" column="46" selection-start-line="70" selection-start-column="46" selection-end-line="70" selection-end-column="46" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -494,8 +495,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/function_integration.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="150" lean-forward="true" selection-start-line="150" selection-end-line="150" />
+        <state relative-caret-position="250">
+          <caret line="157" column="18" lean-forward="true" selection-start-line="157" selection-start-column="18" selection-end-line="157" selection-end-column="18" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

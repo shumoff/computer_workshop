@@ -112,8 +112,15 @@ def interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False)
     return numerical_value
 
 
-def composite_quadrature_rules(a, b, n, method=regular_iqr, epsilon=10**-6):
-    sample_value = integrate.quad(wanted_function, a, b)[0]
+def methodical_error_estimation(a, b, knots):
+    x_ = sp.Symbol("x")
+    f = -sp.Abs(sp.diff(function(0, diff=True), sp.Symbol("x"), len(knots)))
+    f = sp.utilities.lambdify(x_, f)
+    return (-optimize.minimize_scalar(f, bounds=(a, b), method='Bounded').fun / math.factorial(len(knots))) * \
+        integrate.quad(estimator_func, a, b, args=(knots,))[0]
+
+
+def runge(a, b, n, epsilon=10**-6, method=regular_iqr):
     s_h1 = 0
     s_h2 = 0
     k = 3
@@ -123,13 +130,48 @@ def composite_quadrature_rules(a, b, n, method=regular_iqr, epsilon=10**-6):
     for i in range(k):
         s_h1 += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, method=method, composite=True)
         for j in range(l_):
-            s_h2 += interpolation_quadrature_rules(a + (i*l_ + j) * h / l_, a + (i*l_ + j + 1) * h / l_, n,
+            s_h2 += interpolation_quadrature_rules(a + (i * l_ + j) * h / l_, a + (i * l_ + j + 1) * h / l_, n,
                                                    method=method, composite=True)
-    h_opt = h * ((epsilon * (1 - l_**(-m)) / abs(s_h2 - s_h1))**(1/m))
-    k_opt = math.floor((b - a)/h_opt)
+    h_opt = h * ((epsilon * (1 - l_ ** (-m)) / abs(s_h2 - s_h1)) ** (1 / m))
+    k_opt = math.floor((b - a) / h_opt)
+    return h_opt, k_opt
+
+
+def richardson(a, b, n, epsilon=10**-6, method=regular_iqr):
+    s_h1 = 0
+    s_h2 = 0
+    k = 3
+    r_ = 2
+    m = 2
+    h = (b - a) / k
+
+    pass
+
+
+def aitken(a, b, n, epsilon=10**-6, method=regular_iqr):
+    s_h1 = 0
+    s_h2 = 0
+    s_h3 = 0
+    k = 3
+    l_ = 2
+    h_1 = (b - a) / k
+    h_2 = h_1 / l_
+    h_3 = h_2 / l_
+    for i in range(k):
+        s_h1 += interpolation_quadrature_rules(a + i * h_1, a + (i + 1) * h_1, n, method=method, composite=True)
+        for j in range(l_):
+            s_h2 += interpolation_quadrature_rules(a + (i * l_ + j) * h_2, a + (i * l_ + j + 1) * h_2, n,
+                                                   method=method, composite=True)
+            for _ in range(l_**2):
+                s_h3 += interpolation_quadrature_rules(a + (j * l_ + _) * h_3, a + (j * l_ + _ + 1) * h_3, n,
+                                                       method=method, composite=True)  # переделать, тут что-то нечисто
+    pass
+
+
+def composite_quadrature_rules(a, b, n, method=regular_iqr, accuracy_rule=runge, epsilon=10**-6):
+    sample_value = integrate.quad(wanted_function, a, b)[0]
     numerical_value = 0
-    print(h_opt)
-    print(k_opt)
+    h_opt, k_opt = accuracy_rule(a, b, n, epsilon=epsilon, method=method)
     for j in range(k_opt):
         numerical_value += interpolation_quadrature_rules(a + j * h_opt, a + (j + 1) * h_opt, n,
                                                           method=method, composite=True)
@@ -150,18 +192,10 @@ def composite_quadrature_rules(a, b, n, method=regular_iqr, epsilon=10**-6):
 #                 step_matrix[i][j] = 0
 
 
-def methodical_error_estimation(a, b, knots):
-    x_ = sp.Symbol("x")
-    f = -sp.Abs(sp.diff(function(0, diff=True), sp.Symbol("x"), len(knots)))
-    f = sp.utilities.lambdify(x_, f)
-    return (-optimize.minimize_scalar(f, bounds=(a, b), method='Bounded').fun / math.factorial(len(knots))) * \
-        integrate.quad(estimator_func, a, b, args=(knots,))[0]
-
-
 def main(a, b, n):
     start = time.time()
     interpolation_quadrature_rules(a, b, n, method=regular_iqr)
-    composite_quadrature_rules(a, b, n, method=regular_iqr, epsilon=epsilon_)
+    composite_quadrature_rules(a, b, n, method=regular_iqr, accuracy_rule=runge, epsilon=epsilon_)
     print("Elapsed time: ", time.time() - start)
 
 
