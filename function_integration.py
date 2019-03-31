@@ -62,17 +62,41 @@ def coefficients(a, b, knots):
     return coefficients_
 
 
-def interpolation_quadrature_rules(a, b, n, composite=False):
-    numerical_value = 0
+def regular_iqr(a, b, n):
     knots = np.linspace(a, b, n)
     moments = [k[0] for k in [integrate.quad(weight_func, a, b, args=(j,)) for j in range(n)]]
     knots_matrix = np.zeros((n, n))
     for s in range(n):
         for j in range(n):
             knots_matrix[s][j] = knots[j] ** s
-    moments_vector = np.matrix([moments[i] for i in range(n)]).transpose()
-    quadrature_coefficients = np.linalg.solve(knots_matrix, moments_vector)
-    quadrature_coefficients = list(np.ravel(quadrature_coefficients))
+    moments_vector = np.matrix(moments).transpose()
+    quadrature_coefficients = list(np.ravel(np.linalg.solve(knots_matrix, moments_vector)))
+    return knots, quadrature_coefficients
+
+
+def gauss_iqr(a, b, n):
+    moments = [k[0] for k in [integrate.quad(weight_func, a, b, args=(j,)) for j in range(2*n)]]
+    moments_matrix = np.zeros((n, n))
+    for s in range(n):
+        for j in range(n):
+            moments_matrix[s][j] = moments[j+s]
+    moments_vector = np.matrix([-moments[n+s] for s in range(n)]).transpose()
+    knot_polynomial_coefficients = list(np.ravel(np.linalg.solve(moments_matrix, moments_vector)))
+    knot_polynomial_coefficients.append(1)
+    knot_polynomial_coefficients.reverse()
+    knots = list(np.ravel(np.roots(knot_polynomial_coefficients)))
+    knots_matrix = np.zeros((n, n))
+    for s in range(n):
+        for j in range(n):
+            knots_matrix[s][j] = knots[j] ** s
+    moments_vector = np.matrix(moments[:n]).transpose()
+    quadrature_coefficients = list(np.ravel(np.linalg.solve(knots_matrix, moments_vector)))
+    return knots, quadrature_coefficients
+
+
+def interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False):
+    numerical_value = 0
+    knots, quadrature_coefficients = method(a, b, n)
     for i in range(n):
         numerical_value += quadrature_coefficients[i] * function(knots[i])
     if not composite:
@@ -88,7 +112,7 @@ def interpolation_quadrature_rules(a, b, n, composite=False):
     return numerical_value
 
 
-def composite_quadrature_rule(a, b, n, epsilon=10**-6):
+def composite_quadrature_rules(a, b, n, method=regular_iqr, epsilon=10**-6):
     sample_value = integrate.quad(wanted_function, a, b)[0]
     s_h1 = 0
     s_h2 = 0
@@ -97,38 +121,33 @@ def composite_quadrature_rule(a, b, n, epsilon=10**-6):
     m = 2
     h = (b - a) / k
     for i in range(k):
-        s_h1 += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, composite=True)
-    for i in range(l_*k):
-        s_h2 += interpolation_quadrature_rules(a + i * h/l_, a + (i + 1) * h/l_, n, composite=True)
+        s_h1 += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, method=method, composite=True)
+        for j in range(l_):
+            s_h2 += interpolation_quadrature_rules(a + (i*l_ + j) * h / l_, a + (i*l_ + j + 1) * h / l_, n,
+                                                   method=method, composite=True)
     h_opt = h * ((epsilon * (1 - l_**(-m)) / abs(s_h2 - s_h1))**(1/m))
     k_opt = math.floor((b - a)/h_opt)
     numerical_value = 0
+    print(h_opt)
     print(k_opt)
     for j in range(k_opt):
-        numerical_value += interpolation_quadrature_rules(a + j * h_opt, a + (j + 1) * h_opt, n, composite=True)
-    numerical_value += interpolation_quadrature_rules(a + k_opt * h_opt, b, n, composite=True)
-    # k = 0
-    # while abs(sample_value - numerical_value) > epsilon:
-    #     numerical_value = 0
-    #     k += 1
-    #     h = (b - a) / k
-    #     for i in range(k):
-    #         numerical_value += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, composite=True)
-    # print(k)
-    print("\nComposite resulting value: ", numerical_value, "Difference: ", abs(sample_value - numerical_value))
+        numerical_value += interpolation_quadrature_rules(a + j * h_opt, a + (j + 1) * h_opt, n,
+                                                          method=method, composite=True)
+    numerical_value += interpolation_quadrature_rules(a + k_opt * h_opt, b, n, method=method, composite=True)
+    print("\nComposite resulting value: ", numerical_value, "\nDifference: ", abs(sample_value - numerical_value))
 
 
-def richardson(a, b, epsilon=10**-6):
-    steps = 0
-    m = 0
-    while True:  # compare to epsilon
-        steps += 1
-        h = (b - a) / steps
-        r = steps - 1
-        step_matrix = np.zeros((r+1, r+1))
-        for i in range(r+1):
-            for j in range(r+1):
-                step_matrix[i][j] = 0
+# def richardson(a, b, epsilon=10**-6):
+#     steps = 0
+#     m = 0
+#     while True:  # compare to epsilon
+#         steps += 1
+#         h = (b - a) / steps
+#         r = steps - 1
+#         step_matrix = np.zeros((r+1, r+1))
+#         for i in range(r+1):
+#             for j in range(r+1):
+#                 step_matrix[i][j] = 0
 
 
 def methodical_error_estimation(a, b, knots):
@@ -141,8 +160,8 @@ def methodical_error_estimation(a, b, knots):
 
 def main(a, b, n):
     start = time.time()
-    interpolation_quadrature_rules(a, b, n)
-    composite_quadrature_rule(a, b, n)
+    interpolation_quadrature_rules(a, b, n, method=regular_iqr)
+    composite_quadrature_rules(a, b, n, method=regular_iqr, epsilon=epsilon_)
     print("Elapsed time: ", time.time() - start)
 
 
