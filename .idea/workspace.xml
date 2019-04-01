@@ -19,7 +19,7 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/Computer_Workshop$function_interpolation.coverage" NAME="function_interpolation Coverage Results" MODIFIED="1544601747483" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Computer_Workshop$function_approximation.coverage" NAME="function_approximation Coverage Results" MODIFIED="1544602234347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Computer_Workshop$function_integration.coverage" NAME="function_integration Coverage Results" MODIFIED="1554057538629" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Computer_Workshop$function_integration.coverage" NAME="function_integration Coverage Results" MODIFIED="1554117813070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Computer_Workshop$legendre_polynomials.coverage" NAME="legendre_polynomials Coverage Results" MODIFIED="1544605586358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Computer_Workshop$test.coverage" NAME="test Coverage Results" MODIFIED="1551895297318" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Computer_Workshop$Lagr.coverage" NAME="Lagr Coverage Results" MODIFIED="1539348629408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
@@ -74,8 +74,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/function_integration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="250">
-              <caret line="157" column="18" lean-forward="true" selection-start-line="157" selection-start-column="18" selection-end-line="157" selection-end-column="18" />
+            <state relative-caret-position="187">
+              <caret line="185" column="26" selection-start-line="185" selection-start-column="26" selection-end-line="185" selection-end-column="26" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -335,23 +335,24 @@
       <workItem from="1553335931275" duration="6458000" />
       <workItem from="1554024927862" duration="7546000" />
       <workItem from="1554066458680" duration="96000" />
-      <workItem from="1554066581810" duration="3221000" />
+      <workItem from="1554066581810" duration="3318000" />
+      <workItem from="1554113904778" duration="3081000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="111890000" />
+    <option name="totallyTimeSpent" value="115068000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2590604" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2624161" />
       <window_info id="Structure" order="1" weight="0.24966443" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3286119" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.33002833" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.33002833" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.38101983" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -495,8 +496,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/function_integration.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="157" column="18" lean-forward="true" selection-start-line="157" selection-start-column="18" selection-end-line="157" selection-end-column="18" />
+        <state relative-caret-position="187">
+          <caret line="185" column="26" selection-start-line="185" selection-start-column="26" selection-end-line="185" selection-end-column="26" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

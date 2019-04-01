@@ -125,7 +125,7 @@ def runge(a, b, n, epsilon=10**-6, method=regular_iqr):
     s_h2 = 0
     k = 3
     l_ = 2
-    m = 2
+    m = aitken(a, b, n)
     h = (b - a) / k
     for i in range(k):
         s_h1 += interpolation_quadrature_rules(a + i * h, a + (i + 1) * h, n, method=method, composite=True)
@@ -138,17 +138,26 @@ def runge(a, b, n, epsilon=10**-6, method=regular_iqr):
 
 
 def richardson(a, b, n, epsilon=10**-6, method=regular_iqr):
+    sample_value = integrate.quad(wanted_function, a, b)[0]
     s_h1 = 0
     s_h2 = 0
     k = 3
-    r_ = 2
+    l_ = 2
     m = 2
-    h = (b - a) / k
+    h_1 = (b - a) / k
+    h_2 = h_1 / l_
+    for i in range(k):
+        s_h1 += interpolation_quadrature_rules(a + i * h_1, a + (i + 1) * h_1, n, method=method, composite=True)
+        for j in range(l_):
+            s_h2 += interpolation_quadrature_rules(a + (i * l_ + j) * h_2, a + (i * l_ + j + 1) * h_2, n,
+                                                   method=method, composite=True)
+    m = aitken(a, b, n)
+    res = s_h2 + (s_h2 - s_h1)/(l_ ** m - 1)
+    print("Richardson value: ", res, "\nRichardson error: ", sample_value - res)
+    return res
 
-    pass
 
-
-def aitken(a, b, n, epsilon=10**-6, method=regular_iqr):
+def aitken(a, b, n, method=regular_iqr):
     s_h1 = 0
     s_h2 = 0
     s_h3 = 0
@@ -162,10 +171,12 @@ def aitken(a, b, n, epsilon=10**-6, method=regular_iqr):
         for j in range(l_):
             s_h2 += interpolation_quadrature_rules(a + (i * l_ + j) * h_2, a + (i * l_ + j + 1) * h_2, n,
                                                    method=method, composite=True)
-            for _ in range(l_**2):
-                s_h3 += interpolation_quadrature_rules(a + (j * l_ + _) * h_3, a + (j * l_ + _ + 1) * h_3, n,
-                                                       method=method, composite=True)  # переделать, тут что-то нечисто
-    pass
+            for _ in range(l_):
+                s_h3 += interpolation_quadrature_rules(a + (i * l_ ** 2 + j * l_ + _) * h_3,
+                                                       a + (i * l_ ** 2 + j * l_ + _ + 1) * h_3, n,
+                                                       method=method, composite=True)
+    m = - (np.log(abs((s_h3 - s_h2)/(s_h2 - s_h1)))/np.log(l_))
+    return m
 
 
 def composite_quadrature_rules(a, b, n, method=regular_iqr, accuracy_rule=runge, epsilon=10**-6):
@@ -177,19 +188,6 @@ def composite_quadrature_rules(a, b, n, method=regular_iqr, accuracy_rule=runge,
                                                           method=method, composite=True)
     numerical_value += interpolation_quadrature_rules(a + k_opt * h_opt, b, n, method=method, composite=True)
     print("\nComposite resulting value: ", numerical_value, "\nDifference: ", abs(sample_value - numerical_value))
-
-
-# def richardson(a, b, epsilon=10**-6):
-#     steps = 0
-#     m = 0
-#     while True:  # compare to epsilon
-#         steps += 1
-#         h = (b - a) / steps
-#         r = steps - 1
-#         step_matrix = np.zeros((r+1, r+1))
-#         for i in range(r+1):
-#             for j in range(r+1):
-#                 step_matrix[i][j] = 0
 
 
 def main(a, b, n):
