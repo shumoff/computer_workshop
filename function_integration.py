@@ -135,38 +135,61 @@ def s_h_values(a, b, n, k, method=regular_iqr):
     return s_h
 
 
-def runge(a, b, n, epsilon=10**-6, method=regular_iqr):
-    k = 3
+def runge(a, b, n, k=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
     l_ = 2
     m = 2
     h = (b - a) / k
+    if accuracy:
+        s_h1, s_h2 = s_h_values(a, b, n, k, method=method), s_h_values(a, b, n, k * l_, method=method)
+        error = abs((s_h2 - s_h1) / (1 - l_ ** - m))
+        return error
     s_h1, s_h2 = s_h_values(a, b, n, k, method=method), s_h_values(a, b, n, k * l_, method=method)
-    h_opt = h * ((epsilon * (1 - l_ ** (-m)) / abs(s_h2 - s_h1)) ** (1 / m))
-    k_opt = math.floor((b - a) / h_opt)
+    h_opt = 0.95 * h * ((epsilon * (1 - l_ ** (-m)) / abs(s_h2 - s_h1)) ** (1 / m))
+    k_opt = math.ceil((b - a) / h_opt)
     h_opt = (b - a) / k_opt
     return h_opt, k_opt
 
 
-def richardson(a, b, n, r, method=regular_iqr):
-    sample_value = integrate.quad(wanted_function, a, b)[0]
-    r = 8  # hard-coding
+def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
     l_ = 2
-    m = aitken(a, b, n, method=method)
+    m = 2
     h = (b - a) / r
-    h_matrix = np.zeros((r + 1, r + 1))
-    s_h_vector = []
-    for i in range(r+1):
-        for j in range(r+1):
-            if j == r:
-                h_matrix[i][j] = -1
-            else:
-                h_matrix[i][j] = (h/l_**i)**(m+j)
-        s_h_vector.append(- s_h_values(a, b, n, r*l_**i, method=method))
-    s_h_vector = np.matrix(s_h_vector).transpose()
-    coefficients_ = list(np.ravel(np.linalg.solve(h_matrix, s_h_vector)))
-    error = abs(np.ravel(coefficients_[-1] + s_h_vector[-1])[0])
-    h_opt, k_opt = (b - a) / (r * l_ ** r), r * l_ ** r
-    return error
+    error = epsilon + 1
+    if accuracy:
+        h_matrix = np.zeros((r + 1, r + 1))
+        s_h_vector = []
+        for i in range(r + 1):
+            for j in range(r + 1):
+                if j == r:
+                    h_matrix[i][j] = -1
+                else:
+                    h_matrix[i][j] = (h / l_ ** i) ** (m + j)
+            s_h_vector.append(- s_h_values(a, b, n, r * l_ ** i, method=method))
+        s_h_vector = np.matrix(s_h_vector).transpose()
+        coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
+        h_matrix[0][-1] = 0
+        error = abs(list(np.ravel(h_matrix[0]*coefficients_))[0])
+        return error
+    r = 1
+    while error > epsilon:
+        r += 1
+        h_matrix = np.zeros((r + 1, r + 1))
+        s_h_vector = []
+        for i in range(r+1):
+            for j in range(r+1):
+                if j == r:
+                    h_matrix[i][j] = -1
+                else:
+                    h_matrix[i][j] = (h/l_**i)**(m+j)
+            s_h_vector.append(- s_h_values(a, b, n, r*l_**i, method=method))
+        s_h_vector = np.matrix(s_h_vector).transpose()
+        coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
+        h_matrix[0][-1] = 0
+        error = abs(list(np.ravel(h_matrix[0] * coefficients_))[0])
+    h_opt = 0.95 * (b - a) / r
+    k_opt = math.ceil((b - a) / h_opt)
+    h_opt = (b - a) / k_opt
+    return h_opt, k_opt
 
 
 def aitken(a, b, n, method=regular_iqr):
@@ -178,19 +201,23 @@ def aitken(a, b, n, method=regular_iqr):
     return m
 
 
-def composite_quadrature_rules(a, b, n, method=regular_iqr, accuracy_rule=runge, epsilon=10**-6):
+def composite_quadrature_rules(a, b, n, epsilon=10**-6, method=regular_iqr, accuracy_rule=runge, k=0):
     sample_value = integrate.quad(wanted_function, a, b)[0]
-    h_opt, k_opt = accuracy_rule(a, b, n, epsilon=epsilon, method=method)
+    if k:
+        estimated_error = accuracy_rule(a, b, n, k, epsilon=epsilon, method=method, accuracy=True)
+        k_opt = k
+    else:
+        h_opt, k_opt = accuracy_rule(a, b, n, epsilon=epsilon, method=method, accuracy=False)
+        estimated_error = accuracy_rule(a, b, n, k_opt, epsilon=epsilon, method=method, accuracy=True)
     numerical_value = s_h_values(a, b, n, k_opt, method=method)
-    r_error = richardson(a, b, n, k_opt, regular_iqr)
-    print("\nComposite resulting value: ", numerical_value, "\nRichardson's error: ", r_error,
+    print("\nComposite resulting value: ", numerical_value, "\nEstimated error: ", estimated_error,
           "\nExact error: ", abs(sample_value - numerical_value))
 
 
 def main(a, b, n):
     start = time.time()
-    interpolation_quadrature_rules(a, b, n, method=regular_iqr)
-    composite_quadrature_rules(a, b, n, method=regular_iqr, accuracy_rule=runge, epsilon=epsilon_)
+    interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False)
+    composite_quadrature_rules(a, b, n, epsilon=epsilon_, method=regular_iqr, accuracy_rule=runge, k=0)
     print("\nElapsed time: ", time.time() - start)
 
 
