@@ -215,10 +215,10 @@ def composite_quadrature_rules(a, b, n, epsilon=10**-6, method=regular_iqr, accu
 
 
 def main(a, b, n):
-    start = time.time()
+    start = time.monotonic()
     interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False)
     composite_quadrature_rules(a, b, n, epsilon=epsilon_, method=regular_iqr, accuracy_rule=runge, k=0)
-    print("\nElapsed time: ", time.time() - start)
+    print("\nElapsed time: ", time.monotonic() - start)
 
 
 if __name__ == "__main__":
