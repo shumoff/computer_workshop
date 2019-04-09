@@ -210,8 +210,8 @@ def composite_quadrature_rules(a, b, n, epsilon=10**-6, method=regular_iqr, accu
         h_opt, k_opt = accuracy_rule(a, b, n, epsilon=epsilon, method=method, accuracy=False)
         estimated_error = accuracy_rule(a, b, n, k_opt, epsilon=epsilon, method=method, accuracy=True)
     numerical_value = s_h_values(a, b, n, k_opt, method=method)
-    print("\nComposite resulting value: ", numerical_value, "\nEstimated error: ", estimated_error,
-          "\nExact error: ", abs(sample_value - numerical_value))
+    print("\nComposite resulting value: ", numerical_value, "\nExact value: ", sample_value,
+          "\nEstimated error: ", estimated_error, "\nExact error: ", abs(sample_value - numerical_value))
 
 
 def main(a, b, n):
