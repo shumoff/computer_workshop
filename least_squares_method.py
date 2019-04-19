@@ -86,4 +86,5 @@ def main(a, n, m_, func):
     print('Canonical coefficients (Chebyshev): ', canonical_coefficients(test_x_ch_knots, test_y_ch_knots, m_))
 
 
-main(0.7, 5, 3, f)
+if __name__ == "__main__":
+    main(0.7, 5, 3, f)

@@ -1,12 +1,12 @@
 import numpy as np
 import sympy as sp
 import matplotlib.pyplot as plt
-import math as m
+import math
 
 
 def f(x_, a):
     # return x_**8 + x_**2 + x_
-    return x_ * m.log(x_ + a + 0.1)
+    return x_ * math.log(x_ + a + 0.1)
 
 
 def f_derivative(x_, a):
@@ -25,7 +25,7 @@ def plotting(x, y, y_new, x_knots, y_knots, format_1, format_2, format_3, title)
 
 
 def chebyshev(i, a, n):
-    return a * m.cos(m.pi * (2 * i + 1) / (2 * (n + 1)))
+    return a * math.cos(math.pi * (2 * i + 1) / (2 * (n + 1)))
 
 
 def system(x_, y_, a_, n):
@@ -56,23 +56,23 @@ def system(x_, y_, a_, n):
     return a
 
 
-def splines(x_knots, y_knots, x_, a_, n):
+def splines(x_knots, y_knots, x_, a_, n, m):
     a = system(x_knots, y_knots, a_, n)
     y_ = []
-    print(a)
     for i, point in enumerate(x_):
-        k = i//200
+        k = i//m
         y_.append(a[3*k]*point**2 + a[3*k+1]*point + a[3*k+2])
     return y_
 
 
-def main(a, n, func):
-    x = np.linspace(-a, a, (n-1)*200)
+def main(a, n, func, m_=200):
+    x = np.linspace(-a, a, (n-1)*m_)
     y = [func(i, a) for i in x]
     x_knots = np.linspace(-a, a, n)
     y_knots = [func(i, a) for i in x_knots]
-    y_s = splines(x_knots, y_knots, x, a, n)
+    y_s = splines(x_knots, y_knots, x, a, n, m_)
     plotting(x, y, y_s, x_knots, y_knots, 'b', 'g', 'c.', 'Quadratic Splines')
 
 
-main(5, 3, f)
+if __name__ == "__main__":
+    main(50, 7, f)

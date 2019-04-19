@@ -5,7 +5,7 @@ import math as m
 
 
 def f(x_, a):
-    return x_ * m.log(x_ + a + 0.1)
+    return x_ * m.cos(x_ + a + 0.1)
 
 
 def f_module(x_, a):
@@ -124,4 +124,5 @@ def main(a, n, func):
     print('Canonical coefficients (Chebyshev): ', canonical_coefficients(x_ch_knots, y_ch_knots, n))
 
 
-main(5, 7, f)
+if __name__ == "__main__":
+    main(5, 7, f)
