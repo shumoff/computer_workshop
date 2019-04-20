@@ -69,7 +69,7 @@ def regular_iqr(a, b, n):
     for s in range(n):
         for j in range(n):
             knots_matrix[s][j] = knots[j] ** s
-    moments_vector = np.matrix(moments).transpose()
+    moments_vector = np.array(moments).transpose()
     quadrature_coefficients = list(np.ravel(np.linalg.solve(knots_matrix, moments_vector)))
     return knots, quadrature_coefficients, "standard"
 
@@ -88,7 +88,7 @@ def gauss_iqr(a, b, n):
     for s in range(n):
         for j in range(n):
             moments_matrix[s][j] = moments[j+s]
-    moments_vector = np.matrix([-moments[n+s] for s in range(n)]).transpose()
+    moments_vector = np.array([-moments[n+s] for s in range(n)]).transpose()
     knot_polynomial_coefficients = list(np.ravel(np.linalg.solve(moments_matrix, moments_vector)))
     knot_polynomial_coefficients.append(1)
     knot_polynomial_coefficients.reverse()
@@ -97,7 +97,7 @@ def gauss_iqr(a, b, n):
     for s in range(n):
         for j in range(n):
             knots_matrix[s][j] = knots[j] ** s
-    moments_vector = np.matrix(moments[:n]).transpose()
+    moments_vector = np.array(moments[:n]).transpose()
     quadrature_coefficients = list(np.ravel(np.linalg.solve(knots_matrix, moments_vector)))
     return knots, quadrature_coefficients, "gauss"
 
@@ -165,7 +165,7 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
                 else:
                     h_matrix[i][j] = (h / l_ ** i) ** (m + j)
             s_h_vector.append(- s_h_values(a, b, n, r * l_ ** i, method=method))
-        s_h_vector = np.matrix(s_h_vector).transpose()
+        s_h_vector = np.array(s_h_vector).transpose()
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
         h_matrix[0][-1] = 0
         error = abs(list(np.ravel(h_matrix[0]*coefficients_))[0])
@@ -182,7 +182,7 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
                 else:
                     h_matrix[i][j] = (h/l_**i)**(m+j)
             s_h_vector.append(- s_h_values(a, b, n, r*l_**i, method=method))
-        s_h_vector = np.matrix(s_h_vector).transpose()
+        s_h_vector = np.array(s_h_vector).transpose()
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
         h_matrix[0][-1] = 0
         error = abs(list(np.ravel(h_matrix[0] * coefficients_))[0])
