@@ -168,11 +168,12 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
         s_h_vector = np.array(s_h_vector).transpose()
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
         h_matrix[0][-1] = 0
-        error = abs(list(np.ravel(h_matrix[0]*coefficients_))[0])
+        error = abs(h_matrix[0] @ coefficients_)
         return error
     r = 1
     s_h_vector = [- s_h_values(a, b, n, r*l_**0, method=method), - s_h_values(a, b, n, r*l_**r, method=method)]
     coefficients_ = []
+    h_matrix = np.zeros((r + 1, r + 1))
     while error > epsilon:
         r += 1
         h_matrix = np.zeros((r + 1, r + 1))
@@ -187,7 +188,7 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
         s_h_vector = np.array(s_h_vector).transpose()
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
         h_matrix[-1][-1] = 0
-        error = abs(list(np.ravel(h_matrix[-1] * coefficients_))[0])
+        error = abs(h_matrix[-1] @ coefficients_)
     return coefficients_[-1], error
 
 
@@ -218,7 +219,7 @@ def composite_quadrature_rules(a, b, n, epsilon=10**-6, method=regular_iqr, accu
 def main(a, b, n):
     start = time.monotonic()
     interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False)
-    composite_quadrature_rules(a, b, n, epsilon=epsilon_, method=regular_iqr, accuracy_rule=runge, k=0)
+    composite_quadrature_rules(a, b, n, epsilon=epsilon_, method=regular_iqr, accuracy_rule=richardson, k=0)
     print("\nElapsed time: ", time.monotonic() - start)
 
 
