@@ -1,4 +1,3 @@
-import math
 import time
 import numpy as np
 import sympy as sp
@@ -16,11 +15,11 @@ beta = 4/7
 
 def function(x, opt=False, diff=False):
     if opt:
-        return -abs(4 * math.cos(2.5*x) * math.exp(4*x/7) + 2.5 * math.sin(5.5*x) * math.exp(-3*x/5) + 4.3 * x)
+        return -abs(4 * np.cos(2.5*x) * np.exp(4*x/7) + 2.5 * np.sin(5.5*x) * np.exp(-3*x/5) + 4.3 * x)
     elif diff:
         x_ = sp.Symbol("x")
         return 4 * sp.cos(2.5 * x_) * sp.exp(4 * x_ / 7) + 2.5 * sp.sin(5.5 * x_) * sp.exp(-3 * x_ / 5) + 4.3 * x_
-    return 4 * math.cos(2.5*x) * math.exp(4*x/7) + 2.5 * math.sin(5.5*x) * math.exp(-3*x/5) + 4.3 * x
+    return 4 * np.cos(2.5*x) * np.exp(4*x/7) + 2.5 * np.sin(5.5*x) * np.exp(-3*x/5) + 4.3 * x
 
 
 def weight_func(x, j):
@@ -80,7 +79,7 @@ def stand_meth_err_estimation(a, b, knots):
     x_ = sp.Symbol("x")
     f = -sp.Abs(sp.diff(function(0, diff=True), sp.Symbol("x"), len(knots)))
     f = sp.utilities.lambdify(x_, f)
-    return (-optimize.minimize_scalar(f, bounds=(a, b), method='Bounded').fun / math.factorial(len(knots))) * \
+    return (-optimize.minimize_scalar(f, bounds=(a, b), method='Bounded').fun / np.math.factorial(len(knots))) * \
         integrate.quad(estimator_func, a, b, args=(knots,))[0]
 
 
@@ -108,7 +107,7 @@ def gauss_meth_err_estimation(a, b, knots):
     x_ = sp.Symbol("x")
     f = -sp.Abs(sp.diff(function(0, diff=True), sp.Symbol("x"), 2*len(knots)))
     f = sp.utilities.lambdify(x_, f)
-    return (-optimize.minimize_scalar(f, bounds=(a, b), method='Bounded').fun / math.factorial(2*len(knots))) * \
+    return (-optimize.minimize_scalar(f, bounds=(a, b), method='Bounded').fun / np.math.factorial(2*len(knots))) * \
         integrate.quad(estimator_func, a, b, args=(knots, 2))[0]
 
 
@@ -119,7 +118,7 @@ def interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False)
     for i in range(n):
         numerical_value += quadrature_coefficients[i] * function(knots[i])
     if not composite:
-        sample_value = integrate.quad(wanted_function, a, b)[0]
+        sample_value = integrate.quad(wanted_function, a, b, epsabs=1e-10)[0]
         exact_error = abs(sample_value - numerical_value)
         methodical_error = estimation_methods[est](a, b, knots)
         print("Quadrature coefficients: ", quadrature_coefficients,
@@ -139,22 +138,21 @@ def s_h_values(a, b, n, k, method=regular_iqr):
 
 def runge(a, b, n, k=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
     l_ = 2
-    m = 2
+    m = n-1
     h = (b - a) / k
+    s_h1, s_h2 = s_h_values(a, b, n, k, method=method), s_h_values(a, b, n, k * l_, method=method)
     if accuracy:
-        s_h1, s_h2 = s_h_values(a, b, n, k, method=method), s_h_values(a, b, n, k * l_, method=method)
         error = abs((s_h2 - s_h1) / (1 - l_ ** - m))
         return error
-    s_h1, s_h2 = s_h_values(a, b, n, k, method=method), s_h_values(a, b, n, k * l_, method=method)
     h_opt = 0.95 * h * ((epsilon * (1 - l_ ** (-m)) / abs(s_h2 - s_h1)) ** (1 / m))
-    k_opt = math.ceil((b - a) / h_opt)
+    k_opt = np.math.ceil((b - a) / h_opt)
     h_opt = (b - a) / k_opt
     return h_opt, k_opt
 
 
 def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
     l_ = 2
-    m = 2
+    m = n-1
     h = (b - a) / r
     error = epsilon + 1
     if accuracy:
@@ -169,12 +167,12 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
             s_h_vector.append(- s_h_values(a, b, n, r * l_ ** i, method=method))
         s_h_vector = np.array(s_h_vector).transpose()
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
-        # h_matrix[0][-1] = 0
-        # error = abs(list(np.ravel(h_matrix[0]*coefficients_))[0])
-        error = abs(np.ravel(coefficients_[-1] + s_h_vector[-1])[0])
+        h_matrix[0][-1] = 0
+        error = abs(list(np.ravel(h_matrix[0]*coefficients_))[0])
         return error
     r = 1
     s_h_vector = [- s_h_values(a, b, n, r*l_**0, method=method), - s_h_values(a, b, n, r*l_**r, method=method)]
+    coefficients_ = []
     while error > epsilon:
         r += 1
         h_matrix = np.zeros((r + 1, r + 1))
@@ -188,13 +186,9 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
         s_h_vector.append(- s_h_values(a, b, n, r*l_**r, method=method))
         s_h_vector = np.array(s_h_vector).transpose()
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
-        # h_matrix[0][-1] = 0
-        # error = abs(list(np.ravel(h_matrix[0] * coefficients_))[0])
-        error = abs(np.ravel(coefficients_[-1] + s_h_vector[-1])[0])
-    h_opt = 0.95 * (b - a) / r
-    k_opt = math.ceil((b - a) / h_opt)
-    h_opt = (b - a) / k_opt
-    return h_opt, k_opt
+        h_matrix[-1][-1] = 0
+        error = abs(list(np.ravel(h_matrix[-1] * coefficients_))[0])
+    return coefficients_[-1], error
 
 
 def aitken(a, b, n, method=regular_iqr):
@@ -207,21 +201,23 @@ def aitken(a, b, n, method=regular_iqr):
 
 
 def composite_quadrature_rules(a, b, n, epsilon=10**-6, method=regular_iqr, accuracy_rule=runge, k=0):
-    sample_value = integrate.quad(wanted_function, a, b)[0]
+    sample_value = integrate.quad(wanted_function, a, b, epsabs=1e-10)[0]
     if k:
         estimated_error = accuracy_rule(a, b, n, k, epsilon=epsilon, method=method, accuracy=True)
-        k_opt = k
+        numerical_value = s_h_values(a, b, n, k, method=method)
+    elif accuracy_rule == richardson:
+        numerical_value, estimated_error = accuracy_rule(a, b, n, epsilon=epsilon, method=method, accuracy=False)
     else:
         h_opt, k_opt = accuracy_rule(a, b, n, epsilon=epsilon, method=method, accuracy=False)
         estimated_error = accuracy_rule(a, b, n, k_opt, epsilon=epsilon, method=method, accuracy=True)
-    numerical_value = s_h_values(a, b, n, k_opt, method=method)
+        numerical_value = s_h_values(a, b, n, k_opt, method=method)
     print("\nComposite resulting value: ", numerical_value, "\nExact value: ", sample_value,
           "\nEstimated error: ", estimated_error, "\nExact error: ", abs(sample_value - numerical_value))
 
 
 def main(a, b, n):
     start = time.monotonic()
-    interpolation_quadrature_rules(a, b, n, method=gauss_iqr, composite=False)
+    interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False)
     composite_quadrature_rules(a, b, n, epsilon=epsilon_, method=regular_iqr, accuracy_rule=runge, k=0)
     print("\nElapsed time: ", time.monotonic() - start)
 
