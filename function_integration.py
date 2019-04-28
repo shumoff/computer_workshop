@@ -188,7 +188,6 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
         h_matrix[-1][-1] = 0
         error = abs(h_matrix[-1] @ coefficients_)
-    print(r)
     return coefficients_[-1], error
 
 
