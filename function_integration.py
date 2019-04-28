@@ -5,7 +5,7 @@ from scipy import integrate, optimize
 import warnings
 warnings.filterwarnings("ignore")
 
-epsilon_ = 10 ** -6
+epsilon_ = 1e-6
 a_ = 1.8
 b_ = 2.9
 n_ = 3
@@ -173,7 +173,6 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
     r = 1
     s_h_vector = [- s_h_values(a, b, n, r*l_**0, method=method), - s_h_values(a, b, n, r*l_**r, method=method)]
     coefficients_ = []
-    h_matrix = np.zeros((r + 1, r + 1))
     while error > epsilon:
         r += 1
         h_matrix = np.zeros((r + 1, r + 1))
@@ -189,6 +188,7 @@ def richardson(a, b, n, r=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
         coefficients_ = np.linalg.solve(h_matrix, s_h_vector)
         h_matrix[-1][-1] = 0
         error = abs(h_matrix[-1] @ coefficients_)
+    print(r)
     return coefficients_[-1], error
 
 
