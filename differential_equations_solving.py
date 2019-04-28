@@ -1,8 +1,7 @@
 import numpy as np
 import sympy as sp
 import matplotlib.pyplot as plt
-from scipy import integrate, optimize
-from scipy.misc import derivative
+from scipy import integrate
 
 c_2 = 1/8
 A = 1/15
