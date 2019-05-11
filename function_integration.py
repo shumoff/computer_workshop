@@ -138,7 +138,7 @@ def s_h_values(a, b, n, k, method=regular_iqr):
 
 def runge(a, b, n, k=2, epsilon=10**-6, method=regular_iqr, accuracy=True):
     l_ = 2
-    m = n-1
+    m = aitken(a, b, n, method=method)
     h = (b - a) / k
     s_h1, s_h2 = s_h_values(a, b, n, k, method=method), s_h_values(a, b, n, k * l_, method=method)
     if accuracy:
@@ -218,7 +218,7 @@ def composite_quadrature_rules(a, b, n, epsilon=10**-6, method=regular_iqr, accu
 def main(a, b, n):
     start = time.monotonic()
     interpolation_quadrature_rules(a, b, n, method=regular_iqr, composite=False)
-    composite_quadrature_rules(a, b, n, epsilon=epsilon_, method=regular_iqr, accuracy_rule=richardson, k=0)
+    composite_quadrature_rules(a, b, n, epsilon=epsilon_, method=regular_iqr, accuracy_rule=runge, k=0)
     print("\nElapsed time: ", time.monotonic() - start)
 
 

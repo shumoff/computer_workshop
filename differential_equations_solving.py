@@ -125,7 +125,8 @@ def error_by_step(title, method=second_order_runge_kutta):
     errors = []
     for i in range(len(x_nodes)):
         errors.append(np.linalg.norm(y_nodes[i] - integrate.solve_ivp(
-            system, (x_init, x_k), y_init, dense_output=True, atol=1e-13, rtol=1e-13).sol.__call__(x_nodes[i])))
+            system, (x_init, x_k), y_init, dense_output=True, atol=epsilon * 10 ** -2, rtol=delta * 10 ** -2).
+                                     sol.__call__(x_nodes[i])))
     plt.plot(x_nodes, errors)
     plt.title(title)
     plt.grid(True)
@@ -174,16 +175,13 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
         else:
             x_nodes.append(x_node)
             y_nodes.append(y_values[0])
-            steps.append(k)
             k = max((k / 2, min(steps)))
+            steps.append(k)
 
     steps = [segment_length / counter for counter in steps]
     denied_steps = [segment_length / counter for counter in denied_steps]
 
-    if method == second_order_runge_kutta:
-        right_side_reference = counter * 3 * accuracy_order
-    else:
-        right_side_reference = counter * 3 * accuracy_order
+    right_side_reference = counter * 3 * accuracy_order
 
     plt.plot(x_nodes, steps)
     plt.plot(denied_x, denied_steps, "rp")
@@ -194,7 +192,8 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
     errors = []
     for i in range(len(x_nodes)):
         errors.append(np.linalg.norm(y_nodes[i] - integrate.solve_ivp(
-            system, (x_init, x_k), y_init, dense_output=True, atol=1e-13, rtol=1e-13).sol.__call__(x_nodes[i])))
+            system, (x_init, x_k), y_init, dense_output=True, atol=epsilon * 10 ** -2, rtol=delta * 10 ** -2).
+                                     sol.__call__(x_nodes[i])))
     plt.plot(x_nodes, errors)
     plt.title(f"{title} auto-step absolute error by independent variable")
     plt.grid(True)
@@ -204,7 +203,8 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
 
 def main():
     exact_answer = integrate.solve_ivp(
-        system, (x_init, x_k), y_init, dense_output=True, atol=1e-13, rtol=1e-13).sol.__call__(x_k)
+        system, (x_init, x_k), y_init, dense_output=True, atol=epsilon * 10 ** -2, rtol=delta * 10 ** -2).\
+        sol.__call__(x_k)
 
     answer_2nd = algorithm(method=second_order_runge_kutta)[0]
     answer_4th = algorithm(method=fourth_order_runge_kutta)[0]
