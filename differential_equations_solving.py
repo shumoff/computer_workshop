@@ -147,7 +147,7 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
     x_nodes = [x_init]
     y_nodes = [y_init]
     segment_length = x_k - x_init
-    steps = [k]
+    steps = []
     denied_steps = []
     denied_x = []
     counter = 0
@@ -178,7 +178,7 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
     denied_steps = [segment_length / counter for counter in denied_steps]
 
     right_side_reference = counter * 3 * accuracy_order
-    plt.plot(x_nodes, steps)
+    plt.plot(x_nodes[:-1], steps)
     plt.plot(denied_x, denied_steps, "rp")
     plt.title(f"{title} step length by independent variable")
     plt.grid(True)
