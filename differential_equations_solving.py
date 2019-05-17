@@ -1,25 +1,22 @@
 import numpy as np
-import sympy as sp
 import matplotlib.pyplot as plt
 from scipy import integrate
 
 c_2 = 1 / 8
 A = 1 / 15
 B = 1 / 20
-epsilon = 1e-4
+epsilon = 1e-7
 delta = 1e-8
 x_init = 0
 y_init = np.array([B * np.pi, A * np.pi])
 x_k = np.pi
 
 
-def system(x, y, sym=False):
-    if sym:
-        return [A * sp.Symbol("y1"), -B * sp.Symbol("y0")]
+def system(x, y):
     return np.array([A * y[1], -B * y[0]])
 
 
-def second_order_runge_kutta(k, local_error=False, x_0=x_init, y_0=y_init):
+def second_order_runge_kutta(k, auto_step=False, x_0=x_init, y_0=y_init):
     a_2_1 = c_2
     b_2 = 1 / (2 * c_2)
     b_1 = 1 - b_2
@@ -29,7 +26,7 @@ def second_order_runge_kutta(k, local_error=False, x_0=x_init, y_0=y_init):
     h = (x_k - x_init) / k
     if x_k - x_0 < h:
         h = x_k - x_0
-    if local_error:
+    if auto_step:
         k = 1
         counter = 2
     else:
@@ -44,20 +41,20 @@ def second_order_runge_kutta(k, local_error=False, x_0=x_init, y_0=y_init):
             y.append(y[i] + b_1 * k_1 + b_2 * k_2)
             x.append(x[i] + h)
         y_nodes.append(y[-1])
-    if local_error:
+    if auto_step:
         x_node = x[-1]
         return x_node, y_nodes
     return y
 
 
-def fourth_order_runge_kutta(k, local_error=False, x_0=x_init, y_0=y_init):
+def fourth_order_runge_kutta(k, auto_step=False, x_0=x_init, y_0=y_init):
     x = []
     y = []
     y_nodes = []
     h = (x_k - x_init) / k
     if x_k - x_0 < h:
         h = x_k - x_0
-    if local_error:
+    if auto_step:
         k = 1
         counter = 2
     else:
@@ -74,7 +71,7 @@ def fourth_order_runge_kutta(k, local_error=False, x_0=x_init, y_0=y_init):
             y.append(y[i] + (1 / 6) * (k_1 + 2 * k_2 + 2 * k_3 + k_4))
             x.append(x[i] + h)
         y_nodes.append(y[-1])
-    if local_error:
+    if auto_step:
         x_node = x[-1]
         return x_node, y_nodes
     return y
@@ -90,15 +87,14 @@ def runge_error(approx_1, approx_2, method=second_order_runge_kutta):
 
 
 def algorithm(method=second_order_runge_kutta):
-    r = 1
     k = 2
     approx_1 = method(k)[-1]
-    approx_2 = method(k * (2 ** r))[-1]
+    approx_2 = method(k * 2)[-1]
     error = runge_error(approx_1, approx_2, method=method)
     while error > epsilon:
-        r += 1
+        k *= 2
         approx_1 = approx_2
-        approx_2 = method(k * (2 ** r))[-1]
+        approx_2 = method(k)[-1]
         error = runge_error(approx_1, approx_2, method=method)
     return approx_2, error
 
@@ -157,7 +153,7 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
     counter = 0
     while x_k > x_nodes[-1]:
         counter += 1
-        x_node, y_values = method(k, local_error=True, x_0=x_nodes[-1], y_0=y_nodes[-1])
+        x_node, y_values = method(k, auto_step=True, x_0=x_nodes[-1], y_0=y_nodes[-1])
         local_error = runge_local_error(y_values, method=method)
         if local_error > delta * 2 ** accuracy_order:
             denied_x.append(x_nodes[-1])
@@ -165,7 +161,7 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
             k *= 2
         elif local_error > delta:
             x_nodes.append(x_node)
-            y_nodes.append(y_values[0])
+            y_nodes.append(y_values[1])
             steps.append(k)
             k *= 2
         elif local_error >= delta * (2 ** - (accuracy_order + 1)):
@@ -182,7 +178,6 @@ def auto_step_algorithm(title, method=second_order_runge_kutta):
     denied_steps = [segment_length / counter for counter in denied_steps]
 
     right_side_reference = counter * 3 * accuracy_order
-
     plt.plot(x_nodes, steps)
     plt.plot(denied_x, denied_steps, "rp")
     plt.title(f"{title} step length by independent variable")
